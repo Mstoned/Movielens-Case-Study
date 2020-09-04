@@ -1,0 +1,892 @@
+= Import the Required Libraries
+
+
++*In[1]:*+
+[source, ipython3]
+----
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.style import use
+%matplotlib inline
+
+import seaborn as sns
+
+import warnings 
+warnings.filterwarnings('ignore') 
+----
+
+= Read and display all the required datasets
+
+
++*In[2]:*+
+[source, ipython3]
+----
+ratings = pd.read_csv('ratings.dat', sep='::', header=None, names =['UserID','MovieID','Rating','Timestamp'])
+----
+
+
++*In[3]:*+
+[source, ipython3]
+----
+ratings.head()
+----
+
+
++*Out[3]:*+
+----
+[cols=",,,,",options="header",]
+|====================================
+| |UserID |MovieID |Rating |Timestamp
+|0 |1 |1193 |5 |978300760
+|1 |1 |661 |3 |978302109
+|2 |1 |914 |3 |978301968
+|3 |1 |3408 |4 |978300275
+|4 |1 |2355 |5 |978824291
+|====================================
+----
+
+
++*In[4]:*+
+[source, ipython3]
+----
+users = pd.read_csv('users.dat', sep='::', header=None, names =['UserID','Gender','Age','Occupation','Zip-code'])
+----
+
+
++*In[5]:*+
+[source, ipython3]
+----
+users.head()
+----
+
+
++*Out[5]:*+
+----
+[cols=",,,,,",options="header",]
+|===========================================
+| |UserID |Gender |Age |Occupation |Zip-code
+|0 |1 |F |1 |10 |48067
+|1 |2 |M |56 |16 |70072
+|2 |3 |M |25 |15 |55117
+|3 |4 |M |45 |7 |02460
+|4 |5 |M |25 |20 |55455
+|===========================================
+----
+
+
++*In[6]:*+
+[source, ipython3]
+----
+movies = pd.read_csv('movies.dat', sep='::', header=None, names =['MovieID','Title','Genres'])
+----
+
+
++*In[7]:*+
+[source, ipython3]
+----
+movies.head()
+----
+
+
++*Out[7]:*+
+----
+[cols=",,,",options="header",]
+|===================================================
+| |MovieID |Title |Genres
+|0 |1 |Toy Story (1995) |Animation|Children's|Comedy
+|1 |2 |Jumanji (1995) |Adventure|Children's|Fantasy
+|2 |3 |Grumpier Old Men (1995) |Comedy|Romance
+|3 |4 |Waiting to Exhale (1995) |Comedy|Drama
+|4 |5 |Father of the Bride Part II (1995) |Comedy
+|===================================================
+----
+
+
++*In[8]:*+
+[source, ipython3]
+----
+users.info()
+----
+
+
++*Out[8]:*+
+----
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 6040 entries, 0 to 6039
+Data columns (total 5 columns):
+UserID        6040 non-null int64
+Gender        6040 non-null object
+Age           6040 non-null int64
+Occupation    6040 non-null int64
+Zip-code      6040 non-null object
+dtypes: int64(3), object(2)
+memory usage: 236.0+ KB
+----
+
+= Merge all the datasets into one Master dataset
+
+
++*In[9]:*+
+[source, ipython3]
+----
+master_data = pd.merge(movies, ratings, on = 'MovieID')
+master_data = pd.merge(master_data, users, on = 'UserID')
+----
+
+
++*In[10]:*+
+[source, ipython3]
+----
+master_data.head()
+----
+
+
++*Out[10]:*+
+----
+[cols=",,,,,,,,,,",options="header",]
+|=======================================================================
+| |MovieID |Title |Genres |UserID |Rating |Timestamp |Gender |Age
+|Occupation |Zip-code
+|0 |1 |Toy Story (1995) |Animation|Children's|Comedy |1 |5 |978824268 |F
+|1 |10 |48067
+
+|1 |48 |Pocahontas (1995) |Animation|Children's|Musical|Romance |1 |5
+|978824351 |F |1 |10 |48067
+
+|2 |150 |Apollo 13 (1995) |Drama |1 |5 |978301777 |F |1 |10 |48067
+
+|3 |260 |Star Wars: Episode IV - A New Hope (1977)
+|Action|Adventure|Fantasy|Sci-Fi |1 |4 |978300760 |F |1 |10 |48067
+
+|4 |527 |Schindler's List (1993) |Drama|War |1 |5 |978824195 |F |1 |10
+|48067
+|=======================================================================
+----
+
+= •Visualize user age distribution
+
+
++*In[11]:*+
+[source, ipython3]
+----
+users.plot(kind='hist', y='Age')
+plt.show()
+----
+
+
++*Out[11]:*+
+----
+![png](output_14_0.png)
+----
+
+
++*In[12]:*+
+[source, ipython3]
+----
+# Visualize age distribution of users
+users.Age.plot.hist(bins=50)
+plt.style.use('ggplot')
+plt.title('User Age Distribution')
+plt.xlabel('Age')
+plt.show()
+----
+
+
++*Out[12]:*+
+----
+![png](output_15_0.png)
+----
+
+= •Visualize overall rating by users
+
+
++*In[13]:*+
+[source, ipython3]
+----
+ratings.plot(kind='hist', y='Rating')
+plt.show()
+----
+
+
++*Out[13]:*+
+----
+![png](output_17_0.png)
+----
+
+= •Find and visualize the user rating of the movie ``Toy Story''
+
+
++*In[14]:*+
+[source, ipython3]
+----
+ToyStory = ratings[ratings["MovieID"] == 1]
+ToyStory.head(10)
+----
+
+
++*Out[14]:*+
+----
+[cols=",,,,",options="header",]
+|====================================
+| |UserID |MovieID |Rating |Timestamp
+|40 |1 |1 |5 |978824268
+|469 |6 |1 |4 |978237008
+|581 |8 |1 |4 |978233496
+|711 |9 |1 |5 |978225952
+|837 |10 |1 |5 |978226474
+|1966 |18 |1 |4 |978154768
+|2276 |19 |1 |5 |978555994
+|2530 |21 |1 |3 |978139347
+|2870 |23 |1 |4 |978463614
+|3405 |26 |1 |3 |978130703
+|====================================
+----
+
+
++*In[15]:*+
+[source, ipython3]
+----
+ToyStory.plot(kind='hist', y='Rating')
+plt.show()
+----
+
+
++*Out[15]:*+
+----
+![png](output_20_0.png)
+----
+
+= •Find and visualize the viewership of the movie ``Toy Story'' by age
+group
+
+
++*In[16]:*+
+[source, ipython3]
+----
+merge1 = pd.merge(ToyStory, users, on = 'UserID')
+merge1.head()
+----
+
+
++*Out[16]:*+
+----
+[cols=",,,,,,,,",options="header",]
+|=======================================================================
+| |UserID |MovieID |Rating |Timestamp |Gender |Age |Occupation |Zip-code
+|0 |1 |1 |5 |978824268 |F |1 |10 |48067
+|1 |6 |1 |4 |978237008 |F |50 |9 |55117
+|2 |8 |1 |4 |978233496 |M |25 |12 |11413
+|3 |9 |1 |5 |978225952 |M |25 |17 |61614
+|4 |10 |1 |5 |978226474 |F |35 |1 |95370
+|=======================================================================
+----
+
+
++*In[17]:*+
+[source, ipython3]
+----
+merge1.plot(kind='hist', y='Age')
+plt.show()
+----
+
+
++*Out[17]:*+
+----
+![png](output_23_0.png)
+----
+
+= •Find and visualize the top 25 movies by viewership rating
+
+
++*In[18]:*+
+[source, ipython3]
+----
+merge2 = pd.merge(movies, ratings, on = 'MovieID')
+merge2.head()
+----
+
+
++*Out[18]:*+
+----
+[cols=",,,,,,",options="header",]
+|=====================================================================
+| |MovieID |Title |Genres |UserID |Rating |Timestamp
+|0 |1 |Toy Story (1995) |Animation|Children's|Comedy |1 |5 |978824268
+|1 |1 |Toy Story (1995) |Animation|Children's|Comedy |6 |4 |978237008
+|2 |1 |Toy Story (1995) |Animation|Children's|Comedy |8 |4 |978233496
+|3 |1 |Toy Story (1995) |Animation|Children's|Comedy |9 |5 |978225952
+|4 |1 |Toy Story (1995) |Animation|Children's|Comedy |10 |5 |978226474
+|=====================================================================
+----
+
+
++*In[19]:*+
+[source, ipython3]
+----
+Top25 = merge2["MovieID"].value_counts().head(25)
+----
+
+
++*In[20]:*+
+[source, ipython3]
+----
+Top25 = pd.DataFrame(Top25, columns=['MovieID'])
+----
+
+
++*In[21]:*+
+[source, ipython3]
+----
+Top25.plot(kind='barh')
+----
+
+
++*Out[21]:*+
+----<matplotlib.axes._subplots.AxesSubplot at 0x28f3407a9b0>
+![png](output_28_1.png)
+----
+
+
++*In[22]:*+
+[source, ipython3]
+----
+Top = merge2["Title"].value_counts().head(25)
+Top = pd.DataFrame(Top, columns=['Title'])
+Top.plot(kind='barh')
+----
+
+
++*Out[22]:*+
+----<matplotlib.axes._subplots.AxesSubplot at 0x28f2ad90fd0>
+![png](output_29_1.png)
+----
+
+= •Find the rating for a particular user of user id = 2696
+
+
++*In[23]:*+
+[source, ipython3]
+----
+merge3 = pd.merge(ratings, users, on = 'UserID')
+----
+
+
++*In[24]:*+
+[source, ipython3]
+----
+User_2696 = merge3[merge3["UserID"] == 2696]
+----
+
+
++*In[25]:*+
+[source, ipython3]
+----
+User_2696
+----
+
+
++*Out[25]:*+
+----
+[cols=",,,,,,,,",options="header",]
+|=======================================================================
+| |UserID |MovieID |Rating |Timestamp |Gender |Age |Occupation |Zip-code
+|440667 |2696 |1258 |4 |973308710 |M |25 |7 |24210
+|440668 |2696 |1270 |2 |973308676 |M |25 |7 |24210
+|440669 |2696 |1617 |4 |973308842 |M |25 |7 |24210
+|440670 |2696 |1625 |4 |973308842 |M |25 |7 |24210
+|440671 |2696 |1644 |2 |973308920 |M |25 |7 |24210
+|440672 |2696 |1645 |4 |973308904 |M |25 |7 |24210
+|440673 |2696 |1805 |4 |973308886 |M |25 |7 |24210
+|440674 |2696 |1892 |4 |973308904 |M |25 |7 |24210
+|440675 |2696 |800 |5 |973308842 |M |25 |7 |24210
+|440676 |2696 |2338 |2 |973308920 |M |25 |7 |24210
+|440677 |2696 |1711 |4 |973308904 |M |25 |7 |24210
+|440678 |2696 |3176 |4 |973308865 |M |25 |7 |24210
+|440679 |2696 |2389 |4 |973308710 |M |25 |7 |24210
+|440680 |2696 |1589 |3 |973308865 |M |25 |7 |24210
+|440681 |2696 |2713 |1 |973308710 |M |25 |7 |24210
+|440682 |2696 |3386 |1 |973308842 |M |25 |7 |24210
+|440683 |2696 |1783 |4 |973308865 |M |25 |7 |24210
+|440684 |2696 |350 |3 |973308886 |M |25 |7 |24210
+|440685 |2696 |1092 |4 |973308886 |M |25 |7 |24210
+|440686 |2696 |1097 |3 |973308690 |M |25 |7 |24210
+|=======================================================================
+----
+
+= Visualize the rating data by user of user id = 2696
+
+
++*In[26]:*+
+[source, ipython3]
+----
+User_2696.plot(kind='hist', y='Rating')
+----
+
+
++*Out[26]:*+
+----<matplotlib.axes._subplots.AxesSubplot at 0x28f2adbdac8>
+![png](output_35_1.png)
+----
+
+= Feature Engineering
+
+= Find out all the unique genres
+
+
++*In[27]:*+
+[source, ipython3]
+----
+movies.Genres.head()
+----
+
+
++*Out[27]:*+
+----0     Animation|Children's|Comedy
+1    Adventure|Children's|Fantasy
+2                  Comedy|Romance
+3                    Comedy|Drama
+4                          Comedy
+Name: Genres, dtype: object----
+
+
++*In[28]:*+
+[source, ipython3]
+----
+genres = []
+for i in movies["Genres"]:
+    temp=i.split("|")
+    genres.extend(temp)
+unique_genres=list(set(genres))
+print(unique_genres)
+print(len(unique_genres))
+----
+
+
++*Out[28]:*+
+----
+['Musical', 'Mystery', 'Western', 'Horror', 'Fantasy', "Children's", 'Thriller', 'Drama', 'Action', 'Crime', 'Documentary', 'Animation', 'Adventure', 'Romance', 'Sci-Fi', 'Film-Noir', 'Comedy', 'War']
+18
+----
+
+= Genre category with a one-hot encoding
+
+= First Way
+
+
++*In[29]:*+
+[source, ipython3]
+----
+unique_genres=pd.Series(unique_genres)
+unique_genres
+----
+
+
++*Out[29]:*+
+----0         Musical
+1         Mystery
+2         Western
+3          Horror
+4         Fantasy
+5      Children's
+6        Thriller
+7           Drama
+8          Action
+9           Crime
+10    Documentary
+11      Animation
+12      Adventure
+13        Romance
+14         Sci-Fi
+15      Film-Noir
+16         Comedy
+17            War
+dtype: object----
+
+
++*In[30]:*+
+[source, ipython3]
+----
+movies.Genres = movies.Genres.str.split("|")
+movies.Genres[:3]
+----
+
+
++*Out[30]:*+
+----0     [Animation, Children's, Comedy]
+1    [Adventure, Children's, Fantasy]
+2                   [Comedy, Romance]
+Name: Genres, dtype: object----
+
+
++*In[31]:*+
+[source, ipython3]
+----
+df = pd.DataFrame()
+for row in movies.Genres:
+    a= unique_genres.isin(row)
+    df= df.append(a,ignore_index=True)
+df[:5]
+----
+
+
++*Out[31]:*+
+----
+[cols=",,,,,,,,,,,,,,,,,,",options="header",]
+|=======================================================================
+| |0 |1 |2 |3 |4 |5 |6 |7 |8 |9 |10 |11 |12 |13 |14 |15 |16 |17
+|0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0
+
+|1 |0.0 |0.0 |0.0 |0.0 |1.0 |1.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0
+|0.0 |0.0 |0.0 |0.0
+
+|2 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0
+|0.0 |0.0 |1.0 |0.0
+
+|3 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0
+
+|4 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0
+|=======================================================================
+----
+
+
++*In[32]:*+
+[source, ipython3]
+----
+df.columns=unique_genres
+df.head()
+----
+
+
++*Out[32]:*+
+----
+[cols=",,,,,,,,,,,,,,,,,,",options="header",]
+|=======================================================================
+| |Musical |Mystery |Western |Horror |Fantasy |Children's |Thriller
+|Drama |Action |Crime |Documentary |Animation |Adventure |Romance
+|Sci-Fi |Film-Noir |Comedy |War
+|0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0
+
+|1 |0.0 |0.0 |0.0 |0.0 |1.0 |1.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0
+|0.0 |0.0 |0.0 |0.0
+
+|2 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0
+|0.0 |0.0 |1.0 |0.0
+
+|3 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0
+
+|4 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0
+|=======================================================================
+----
+
+
++*In[33]:*+
+[source, ipython3]
+----
+movies = pd.concat((movies ,df),axis=1)
+movies.head()
+----
+
+
++*Out[33]:*+
+----
+[cols=",,,,,,,,,,,,,,,,,,,,,",options="header",]
+|=======================================================================
+| |MovieID |Title |Genres |Musical |Mystery |Western |Horror |Fantasy
+|Children's |Thriller |... |Action |Crime |Documentary |Animation
+|Adventure |Romance |Sci-Fi |Film-Noir |Comedy |War
+|0 |1 |Toy Story (1995) |[Animation, Children's, Comedy] |0.0 |0.0 |0.0
+|0.0 |0.0 |1.0 |0.0 |... |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |0.0 |0.0 |1.0
+|0.0
+
+|1 |2 |Jumanji (1995) |[Adventure, Children's, Fantasy] |0.0 |0.0 |0.0
+|0.0 |1.0 |1.0 |0.0 |... |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |0.0 |0.0
+|0.0
+
+|2 |3 |Grumpier Old Men (1995) |[Comedy, Romance] |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |0.0 |... |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0 |0.0 |1.0 |0.0
+
+|3 |4 |Waiting to Exhale (1995) |[Comedy, Drama] |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |0.0 |... |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0
+
+|4 |5 |Father of the Bride Part II (1995) |[Comedy] |0.0 |0.0 |0.0 |0.0
+|0.0 |0.0 |0.0 |... |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |0.0 |1.0 |0.0
+|=======================================================================
+
+5 rows × 21 columns
+----
+
+= Second Way
+
+
++*In[34]:*+
+[source, ipython3]
+----
+unique_genres
+----
+
+
++*Out[34]:*+
+----0         Musical
+1         Mystery
+2         Western
+3          Horror
+4         Fantasy
+5      Children's
+6        Thriller
+7           Drama
+8          Action
+9           Crime
+10    Documentary
+11      Animation
+12      Adventure
+13        Romance
+14         Sci-Fi
+15      Film-Noir
+16         Comedy
+17            War
+dtype: object----
+
+
++*In[35]:*+
+[source, ipython3]
+----
+movies = pd.read_csv('movies.dat', sep='::', header=None, names =['MovieID','Title','Genres'])
+movies.head()
+----
+
+
++*Out[35]:*+
+----
+[cols=",,,",options="header",]
+|===================================================
+| |MovieID |Title |Genres
+|0 |1 |Toy Story (1995) |Animation|Children's|Comedy
+|1 |2 |Jumanji (1995) |Adventure|Children's|Fantasy
+|2 |3 |Grumpier Old Men (1995) |Comedy|Romance
+|3 |4 |Waiting to Exhale (1995) |Comedy|Drama
+|4 |5 |Father of the Bride Part II (1995) |Comedy
+|===================================================
+----
+
+
++*In[36]:*+
+[source, ipython3]
+----
+for i in unique_genres:
+    movies[i] = movies["Genres"].str.contains(i)*1
+movies.head()
+----
+
+
++*Out[36]:*+
+----
+[cols=",,,,,,,,,,,,,,,,,,,,,",options="header",]
+|=======================================================================
+| |MovieID |Title |Genres |Musical |Mystery |Western |Horror |Fantasy
+|Children's |Thriller |... |Action |Crime |Documentary |Animation
+|Adventure |Romance |Sci-Fi |Film-Noir |Comedy |War
+|0 |1 |Toy Story (1995) |Animation|Children's|Comedy |0 |0 |0 |0 |0 |1
+|0 |... |0 |0 |0 |1 |0 |0 |0 |0 |1 |0
+
+|1 |2 |Jumanji (1995) |Adventure|Children's|Fantasy |0 |0 |0 |0 |1 |1 |0
+|... |0 |0 |0 |0 |1 |0 |0 |0 |0 |0
+
+|2 |3 |Grumpier Old Men (1995) |Comedy|Romance |0 |0 |0 |0 |0 |0 |0 |...
+|0 |0 |0 |0 |0 |1 |0 |0 |1 |0
+
+|3 |4 |Waiting to Exhale (1995) |Comedy|Drama |0 |0 |0 |0 |0 |0 |0 |...
+|0 |0 |0 |0 |0 |0 |0 |0 |1 |0
+
+|4 |5 |Father of the Bride Part II (1995) |Comedy |0 |0 |0 |0 |0 |0 |0
+|... |0 |0 |0 |0 |0 |0 |0 |0 |1 |0
+|=======================================================================
+
+5 rows × 21 columns
+----
+
+= Features affecting the ratings of any particular movie
+
+
++*In[37]:*+
+[source, ipython3]
+----
+features = merge3.drop(['UserID','MovieID','Timestamp','Zip-code'], axis=1)
+features = features[['Age', 'Occupation', 'Rating']]
+features.head()
+----
+
+
++*Out[37]:*+
+----
+[cols=",,,",options="header",]
+|=========================
+| |Age |Occupation |Rating
+|0 |1 |10 |5
+|1 |1 |10 |3
+|2 |1 |10 |3
+|3 |1 |10 |4
+|4 |1 |10 |5
+|=========================
+----
+
+
++*In[38]:*+
+[source, ipython3]
+----
+plt.figure(figsize=(20,8))
+corr=features.corr()
+sns.heatmap(corr,xticklabels=corr.columns.values,yticklabels=corr.columns.values,annot=True)
+----
+
+
++*Out[38]:*+
+----<matplotlib.axes._subplots.AxesSubplot at 0x28f2b44cd68>
+![png](output_53_1.png)
+----
+
+= Model to predict the movie ratings
+
+
++*In[39]:*+
+[source, ipython3]
+----
+merge3.head()
+----
+
+
++*Out[39]:*+
+----
+[cols=",,,,,,,,",options="header",]
+|=======================================================================
+| |UserID |MovieID |Rating |Timestamp |Gender |Age |Occupation |Zip-code
+|0 |1 |1193 |5 |978300760 |F |1 |10 |48067
+|1 |1 |661 |3 |978302109 |F |1 |10 |48067
+|2 |1 |914 |3 |978301968 |F |1 |10 |48067
+|3 |1 |3408 |4 |978300275 |F |1 |10 |48067
+|4 |1 |2355 |5 |978824291 |F |1 |10 |48067
+|=======================================================================
+----
+
+
++*In[40]:*+
+[source, ipython3]
+----
+features = merge3.iloc[0:1000,5:7].values
+label = merge3.iloc[0:1000,2].values
+features[0:2]
+----
+
+
++*Out[40]:*+
+----array([[ 1, 10],
+       [ 1, 10]], dtype=int64)----
+
+
++*In[41]:*+
+[source, ipython3]
+----
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(features, label, test_size = .3, random_state=3)
+----
+
+
++*In[42]:*+
+[source, ipython3]
+----
+from sklearn.svm import SVC
+from sklearn import metrics
+----
+
+
++*In[43]:*+
+[source, ipython3]
+----
+model = SVC(kernel='linear')
+model.fit(X_train,y_train)
+----
+
+
++*Out[43]:*+
+----SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape='ovr', degree=3, gamma='auto_deprecated',
+  kernel='linear', max_iter=-1, probability=False, random_state=None,
+  shrinking=True, tol=0.001, verbose=False)----
+
+
++*In[44]:*+
+[source, ipython3]
+----
+model.score(X_test, y_test)
+----
+
+
++*Out[44]:*+
+----0.38333333333333336----
+
+
++*In[45]:*+
+[source, ipython3]
+----
+preds = model.predict(X_test)
+pd.crosstab(y_test, preds, rownames=['Actual'], colnames=['Predicted'])
+----
+
+
++*Out[45]:*+
+----
+Predicted
+
+4
+
+5
+
+Actual
+
+1
+
+5
+
+0
+
+2
+
+18
+
+2
+
+3
+
+66
+
+17
+
+4
+
+85
+
+25
+
+5
+
+52
+
+30
+----
+
+
++*In[46]:*+
+[source, ipython3]
+----
+model.predict([[1,10]])
+----
+
+
++*Out[46]:*+
+----array([4], dtype=int64)----
